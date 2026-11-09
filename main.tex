@@ -1,0 +1,1261 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{braket}
+\usepackage[hidelinks]{hyperref}
+
+\title{ECE 523 Quantum Computing Portfolio}
+\author{Manny Serrano Campa}
+\date{Fall 2026}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+This portfolio contains reading notes, exercises and glossary terms related to Quantum Computing, developed throughout the Fall 2026 semester as part of my ECE 523 Quantum Computing course. 
+
+Exercises were taken from the Exercise Set pdf constructed by Prof. Natalie Klco. // insert link here. 
+
+
+% Add your introduction as the portfolio develops.
+
+\part{Reading Notes}
+
+% Add reading notes here.
+
+\part{Exercises}
+
+% Match the exercise set: I, II, III, ...
+\setcounter{section}{0}
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+\renewcommand{\thesubsubsection}
+    {\thesection.\thesubsection.\arabic{subsubsection}}
+
+\section{Warm-Up and Preliminaries}
+
+\subsection{Tensor Products}
+
+\subsubsection{Parameters Needed to Specify a Quantum State}
+\label{ex:state-parameters}
+
+We count the independent real parameters needed to specify a
+pure physical state. Normalization constrains the amplitudes,
+and an overall phase does not distinguish physical states.
+
+\paragraph{Starting with one qubit.}
+A single qubit belongs to a two-dimensional Hilbert space and
+can be written as
+\[
+\ket{\psi}=a\ket{0}+b\ket{1},
+\qquad a,b\in\mathbb{C}.
+\]
+Each complex amplitude contains two real numbers, so we begin
+with four real parameters. Normalization requires
+\[
+|a|^2+|b|^2=1,
+\]
+which removes one independent real parameter because the total
+measurement probability must equal one.
+
+An overall phase removes one more parameter. To see why,
+multiplying the entire state by $e^{i\gamma}$ leaves the
+probability of any projective measurement outcome unchanged:
+\[
+\left|\bra{u}e^{i\gamma}\ket{\psi}\right|^2
+=
+\left|e^{i\gamma}\braket{u|\psi}\right|^2
+=
+\left|\braket{u|\psi}\right|^2.
+\]
+This freedom applies to the global phase; the relative phase
+between $a$ and $b$ can affect interference and must be retained.
+Therefore, one qubit requires
+\[
+4-1-1=2
+\]
+independent real parameters.
+
+\paragraph{A separable state of $n$ qubits.}
+For a fully separable pure state,
+\[
+\ket{\Psi}
+=
+\ket{\psi_1}\otimes\ket{\psi_2}\otimes\cdots
+\otimes\ket{\psi_n},
+\]
+we can specify each qubit individually. Since each qubit
+requires two real parameters, the total is
+\[
+\boxed{N_{\mathrm{separable}}=2n.}
+\]
+There are no additional physical parameters associated with
+the individual global phases: multiplying each factor by
+$e^{i\gamma_j}$ only multiplies the full product by the
+unobservable global phase $e^{i\sum_j\gamma_j}$.
+
+\paragraph{A general state of $n$ qubits.}
+The combined Hilbert space has dimension $2^n$. A general
+pure state can therefore be expanded as
+\[
+\ket{\Psi}
+=
+\sum_{x=0}^{2^n-1}c_x\ket{x},
+\]
+where $\ket{x}$ labels a computational basis state using
+the $n$-bit binary representation of $x$.
+
+There are $2^n$ complex amplitudes, giving $2\cdot 2^n$
+real parameters before imposing physical constraints.
+The normalization condition
+\[
+\sum_{x=0}^{2^n-1}|c_x|^2=1
+\]
+removes one parameter, and the global phase removes another.
+Thus,
+\[
+\boxed{N_{\mathrm{general}}=2^{n+1}-2.}
+\]
+This is the parameter count for an unrestricted pure state,
+including a generic entangled state. 
+
+\paragraph{}The difference in scaling comes from whether the joint
+amplitudes factor into individual qubit amplitudes.
+A separable state can be described one qubit at a time,
+so its parameter count grows linearly with $n$.
+A general state requires amplitudes for the full joint basis,
+so its parameter count grows exponentially.
+
+\paragraph{$d$-level quantum degrees of freedom}
+A single $d$-level system has $d$ complex amplitudes.
+After removing normalization and global phase, it requires
+$2d-2$ independent real parameters. For $n$ fully separable
+$d$-level systems,
+\[
+\boxed{N_{\mathrm{separable}}=n(2d-2)=2n(d-1).}
+\]
+
+For a general joint pure state, the Hilbert space has
+dimension $d^n$. Applying the same counting argument gives
+\[
+\boxed{N_{\mathrm{general}}=2d^n-2.}
+\]
+
+As a consistency check, setting $d=2$ recovers the qubit
+results. Setting $n=1$ makes both counts equal to $2d-2$,
+as expected: with only one subsystem, there is no distinction
+between a product state and a general state arising from
+entanglement between subsystems.
+
+% Add subsequent exercises here as we work through them.
+
+\subsubsection{Tensor Product of Three Identical Qubit States}
+\label{ex:three-qubit-product}
+
+The notation $\ket{\psi}^{\otimes 3}$ means taking the tensor
+product of $\ket{\psi}$ with itself three times. For
+\[
+\ket{\psi}
+=
+\frac{\ket{0}+\sqrt{2}\ket{1}}{\sqrt{3}},
+\]
+the joint state is
+\[
+\ket{\psi}^{\otimes 3}
+=
+\frac{1}{3\sqrt{3}}
+\left(\ket{0}+\sqrt{2}\ket{1}\right)
+\otimes
+\left(\ket{0}+\sqrt{2}\ket{1}\right)
+\otimes
+\left(\ket{0}+\sqrt{2}\ket{1}\right).
+\]
+
+The tensor product distributes over addition. Starting with
+the first two factors gives
+\[
+\ket{\psi}^{\otimes 2}
+=
+\frac{1}{3}
+\left(
+\ket{00}
++\sqrt{2}\ket{01}
++\sqrt{2}\ket{10}
++2\ket{11}
+\right).
+\]
+Taking the tensor product with the third qubit then gives
+\[
+\begin{aligned}
+\ket{\psi}^{\otimes 3}
+=
+\frac{1}{3\sqrt{3}}\Big(
+&\ket{000}
++\sqrt{2}\ket{001}
++\sqrt{2}\ket{010}
++2\ket{011}\\
+&+\sqrt{2}\ket{100}
++2\ket{101}
++2\ket{110}
++2\sqrt{2}\ket{111}
+\Big).
+\end{aligned}
+\]
+Each coefficient is the product of the three individual
+qubit amplitudes. Thus, each occurrence of a $1$ contributes
+a factor of $\sqrt{2}$ inside the parentheses. For example,
+$\ket{101}$ has two ones, giving a coefficient of
+$(\sqrt{2})^2=2$.
+
+Using the computational basis in binary order,
+\[
+\left(
+\ket{000},\ket{001},\ket{010},\ket{011},
+\ket{100},\ket{101},\ket{110},\ket{111}
+\right),
+\]
+we obtain the column vector
+\[
+\boxed{
+\ket{\psi}^{\otimes 3}
+=
+\frac{1}{3\sqrt{3}}
+\begin{pmatrix}
+1\\
+\sqrt{2}\\
+\sqrt{2}\\
+2\\
+\sqrt{2}\\
+2\\
+2\\
+2\sqrt{2}
+\end{pmatrix}
+}
+\]
+
+There are eight entries because the three-qubit Hilbert
+space has dimension $2^3=8$. As a normalization check,
+the squared amplitudes sum to
+\[
+\frac{1}{27}
+\left(1+2+2+4+2+4+4+8\right)=1.
+\]
+Although the expansion contains all eight computational
+basis states, the state is separable since it was constructed
+as a tensor product of three individual qubit states.
+A superposition of computational basis states does not,
+by itself, imply entanglement.
+
+\subsubsection{Tensor Products and Reordering Subsystems}
+\label{ex:tensor-product-algorithm}
+
+The tensor product creates a larger vector space by combining
+the vector spaces of the individual systems. We can start
+with two vectors:
+\[
+\ket{a}=
+\begin{pmatrix}a_0\\a_1\end{pmatrix},
+\qquad
+\ket{b}=
+\begin{pmatrix}b_0\\b_1\end{pmatrix}.
+\]
+To take their tensor product, we multiply each entry of
+$\ket{a}$ by the entire vector $\ket{b}$:
+\[
+\ket{a}\otimes\ket{b}
+=
+\begin{pmatrix}
+a_0\ket{b}\\
+a_1\ket{b}
+\end{pmatrix}
+=
+\begin{pmatrix}
+a_0b_0\\
+a_0b_1\\
+a_1b_0\\
+a_1b_1
+\end{pmatrix}.
+\]
+So two vectors with two entries each give a joint vector
+with four entries.
+
+\paragraph{Implementing the tensor product.}
+For vectors of lengths $d_1$ and $d_2$, we first create
+an output vector with $d_1d_2$ entries. Then we go through
+each entry of the first vector and multiply it by each
+entry of the second vector, keeping that order.
+
+Using indices starting at zero, this is
+\[
+c_{i d_2+j}=a_i b_j,
+\qquad
+0\leq i<d_1,\quad 0\leq j<d_2.
+\]
+The index $i$ stays fixed while $j$ goes through the second
+vector. Then we move to the next value of $i$.
+
+For matrices, we do the same thing: replace each entry
+of $A$ with that entry times the entire matrix $B$:
+\[
+A\otimes B=
+\begin{pmatrix}
+A_{00}B & \cdots & A_{0,n-1}B\\
+\vdots & \ddots & \vdots\\
+A_{m-1,0}B & \cdots & A_{m-1,n-1}B
+\end{pmatrix}.
+\]
+If $A$ is $m\times n$ and $B$ is $p\times q$, the result
+is an $mp\times nq$ matrix. Its entries are
+\[
+(A\otimes B)_{ip+k,\;jq+\ell}=A_{ij}B_{k\ell}.
+\]
+
+\paragraph{How the basis is ordered.}
+For the two-qubit example, the entries correspond to
+\[
+(\ket{00},\ket{01},\ket{10},\ket{11}).
+\]
+The rightmost bit changes first. This is the same as
+counting in binary from $0$ to $3$.
+
+More generally, the basis state
+$\ket{i}_1\otimes\ket{j}_2$ has index
+\[
+x=i d_2+j.
+\]
+We go through every state of the second space before
+moving to the next state of the first space. If both
+spaces use binary ordering, we join their bit strings
+to label the joint state.
+
+\paragraph{Building the reordering matrices.}
+To build each matrix, we look at where every input
+basis state goes. The input determines the column,
+and the output determines the row. We put a $1$ at
+that position and zeros everywhere else.
+
+If the input index $x$ goes to $f(x)$, then
+\[
+U=\sum_x\ket{f(x)}\bra{x}.
+\]
+Below, all row and column indices start at zero.
+A listed pair $(r,c)$ means $U_{r,c}=1$, so it also
+specifies the outer-product term $\ket{r}\bra{c}$.
+
+\paragraph{Reversing three qubits.}
+For the order $(1,2,3)\rightarrow(3,2,1)$, we swap
+the first and third bits:
+\[
+U_{\mathrm{rev}}\ket{abc}=\ket{cba}.
+\]
+The input index is $4a+2b+c$, and the output index
+is $4c+2b+a$. For example,
+\[
+\ket{001}\rightarrow\ket{100},
+\]
+so column $1$ has its $1$ in row $4$.
+
+Applying this to all eight basis states gives
+\[
+U_{\mathrm{rev}}=
+\begin{pmatrix}
+1&0&0&0&0&0&0&0\\
+0&0&0&0&1&0&0&0\\
+0&0&1&0&0&0&0&0\\
+0&0&0&0&0&0&1&0\\
+0&1&0&0&0&0&0&0\\
+0&0&0&0&0&1&0&0\\
+0&0&0&1&0&0&0&0\\
+0&0&0&0&0&0&0&1
+\end{pmatrix}.
+\]
+The eight nonzero entries are
+\[
+\begin{aligned}
+(r,c)\in\{&
+(0,0),(4,1),(2,2),(6,3),\\
+&(1,4),(5,5),(3,6),(7,7)\}.
+\end{aligned}
+\]
+
+\paragraph{Reordering four qubits.}
+For the order $(1,2,3,4)\rightarrow(2,3,1,4)$,
+the basis states change as
+\[
+U_{\mathrm{cycle}}\ket{abcd}=\ket{bcad}.
+\]
+The input and output indices are
+\[
+x_{\mathrm{in}}=8a+4b+2c+d,
+\qquad
+x_{\mathrm{out}}=8b+4c+2a+d.
+\]
+For example,
+\[
+\ket{1010}\rightarrow\ket{0110},
+\]
+which gives a $1$ in row $6$, column $10$.
+
+Since the fourth bit stays the same, we can write
+the $16\times16$ matrix using $2\times2$ blocks:
+\[
+U_{\mathrm{cycle}}=
+\begin{pmatrix}
+I&0&0&0&0&0&0&0\\
+0&0&0&0&I&0&0&0\\
+0&I&0&0&0&0&0&0\\
+0&0&0&0&0&I&0&0\\
+0&0&I&0&0&0&0&0\\
+0&0&0&0&0&0&I&0\\
+0&0&0&I&0&0&0&0\\
+0&0&0&0&0&0&0&I
+\end{pmatrix},
+\qquad
+I=\mathbb{I}_2,\quad 0=0_{2\times2}.
+\]
+Each identity block keeps the fourth bit unchanged.
+The sixteen nonzero entries are
+\[
+\begin{aligned}
+(r,c)\in\{&
+(0,0),(1,1),(4,2),(5,3),\\
+&(8,4),(9,5),(12,6),(13,7),\\
+&(2,8),(3,9),(6,10),(7,11),\\
+&(10,12),(11,13),(14,14),(15,15)\}.
+\end{aligned}
+\]
+
+\paragraph{Swapping two three-level systems.}
+Now each subsystem has three basis states, labeled
+$0$, $1$, and $2$. The joint basis is
+\[
+(\ket{00},\ket{01},\ket{02},
+ \ket{10},\ket{11},\ket{12},
+ \ket{20},\ket{21},\ket{22}).
+\]
+We want
+\[
+U_{\mathrm{swap}}\ket{ab}=\ket{ba}.
+\]
+The input index is $3a+b$, and the output index is
+$3b+a$. This gives
+\[
+U_{\mathrm{swap}}=
+\begin{pmatrix}
+1&0&0&0&0&0&0&0&0\\
+0&0&0&1&0&0&0&0&0\\
+0&0&0&0&0&0&1&0&0\\
+0&1&0&0&0&0&0&0&0\\
+0&0&0&0&1&0&0&0&0\\
+0&0&0&0&0&0&0&1&0\\
+0&0&1&0&0&0&0&0&0\\
+0&0&0&0&0&1&0&0&0\\
+0&0&0&0&0&0&0&0&1
+\end{pmatrix}.
+\]
+The nine nonzero entries are
+\[
+\begin{aligned}
+(r,c)\in\{&
+(0,0),(3,1),(6,2),\\
+&(1,3),(4,4),(7,5),\\
+&(2,6),(5,7),(8,8)\}.
+\end{aligned}
+\]
+
+\paragraph{Checking the results.}
+Each matrix has exactly one $1$ in every row and column.
+This means its columns are normalized and orthogonal,
+so
+\[
+U^\dagger U=\mathbb{I}.
+\]
+Thus, all three transformations are unitary. They
+rearrange the amplitudes while preserving the total
+probability.
+
+We can also check how many times we must apply each
+transformation to get back to the original state.
+Reversing three qubits twice or swapping two qutrits
+twice restores the original order:
+\[
+U_{\mathrm{rev}}^2=\mathbb{I}_8,
+\qquad
+U_{\mathrm{swap}}^2=\mathbb{I}_9.
+\]
+The four-qubit transformation cycles the first three
+positions, so it takes three applications:
+\[
+U_{\mathrm{cycle}}^3=\mathbb{I}_{16}.
+\]
+
+\setcounter{subsection}{2}
+\subsection{Hermitian and Unitary Matrices}
+
+\setcounter{subsubsection}{1}
+\subsubsection{Time Evolution for a Time-Independent Hamiltonian}
+
+We start with the Schr\"odinger equation,
+\[
+i\hbar\frac{\partial}{\partial t}\ket{\psi(t)}
+=
+\hat{H}\ket{\psi(t)},
+\]
+where $\hat{H}$ does not depend on time. We want to find
+the operator that takes an initial state at time $t_0$
+to its state at time $t$:
+\[
+\ket{\psi(t)}=U(t,t_0)\ket{\psi(t_0)}.
+\]
+
+Substituting this into the Schr\"odinger equation gives
+\[
+i\hbar\frac{\partial U(t,t_0)}{\partial t}
+\ket{\psi(t_0)}
+=
+\hat{H}U(t,t_0)\ket{\psi(t_0)}.
+\]
+The initial state $\ket{\psi(t_0)}$ is fixed, so the
+time derivative acts only on $U(t,t_0)$. Since this
+equation must hold for any initial state, the operators
+must satisfy
+\[
+\frac{\partial U(t,t_0)}{\partial t}
+=
+-\frac{i}{\hbar}\hat{H}U(t,t_0).
+\]
+
+This has the same form as the differential equation
+$\frac{df}{dt}=af$ with constant $a$, whose solution
+is an exponential. Here, the constant is the operator
+$-i\hat{H}/\hbar$. We also need
+\[
+U(t_0,t_0)=\mathbb{I},
+\]
+because evolving through zero time must leave the
+state unchanged. Together, these give
+\[
+\boxed{
+U(t,t_0)=
+e^{-\frac{i}{\hbar}\hat{H}(t-t_0)}.
+}
+\]
+Therefore, the state at time $t$ is
+\[
+\boxed{
+\ket{\psi(t)}
+=
+e^{-\frac{i}{\hbar}\hat{H}(t-t_0)}
+\ket{\psi(t_0)}.
+}
+\]
+
+\paragraph{Checking the solution.}
+Since $\hat{H}$ is time independent, differentiating
+the matrix exponential gives
+\[
+\frac{\partial U}{\partial t}
+=
+-\frac{i}{\hbar}\hat{H}
+e^{-\frac{i}{\hbar}\hat{H}(t-t_0)}
+=
+-\frac{i}{\hbar}\hat{H}U,
+\]
+which is the equation we needed to solve. At $t=t_0$,
+the exponent is zero, so $U(t_0,t_0)=\mathbb{I}$.
+
+For a short time interval $\Delta t$, the expansion is
+\[
+U(t_0+\Delta t,t_0)
+=
+\mathbb{I}
+-\frac{i}{\hbar}\hat{H}\Delta t
++\mathcal{O}(\Delta t^2).
+\]
+This shows directly how the Hamiltonian determines
+the change in the state over a small amount of time.
+
+\paragraph{What this means physically.}
+If the initial state is an energy eigenstate,
+$\hat{H}\ket{E_n}=E_n\ket{E_n}$, then
+\[
+U(t,t_0)\ket{E_n}
+=
+e^{-\frac{i}{\hbar}E_n(t-t_0)}\ket{E_n}.
+\]
+It only gains a global phase, so its measurement
+probabilities do not change.
+
+For a superposition of energy eigenstates,
+\[
+\ket{\psi(t_0)}=\sum_n c_n\ket{E_n},
+\]
+each component gains its own phase:
+\[
+\ket{\psi(t)}
+=
+\sum_n c_n
+e^{-\frac{i}{\hbar}E_n(t-t_0)}\ket{E_n}.
+\]
+The energy probabilities $|c_n|^2$ stay the same,
+but the relative phases between components with
+different energies change. These relative phases
+can change interference and the probabilities of
+measurements in other bases.
+
+Finally, because $\hat{H}$ is Hermitian, the
+time-evolution operator is unitary:
+\[
+U^\dagger(t,t_0)U(t,t_0)=\mathbb{I}.
+\]
+Thus, the evolution preserves normalization and
+the total measurement probability remains one.
+
+\setcounter{subsubsection}{2}
+\subsubsection{The Exponential of a Hermitian Matrix}
+
+We are given that $A$ is Hermitian, so $A^\dagger=A$.
+To show that $e^{iA}$ is unitary, we need to show
+\[
+(e^{iA})^\dagger e^{iA}=\mathbb{I}.
+\]
+
+First, we write the exponential as a power series:
+\[
+e^{iA}
+=
+\mathbb{I}+iA+\frac{(iA)^2}{2!}
++\frac{(iA)^3}{3!}+\cdots.
+\]
+Taking the Hermitian conjugate conjugates the scalar
+coefficients and transposes and conjugates the matrices.
+Since $i^*=-i$ and $A^\dagger=A$, we have
+\[
+(iA)^\dagger=-iA.
+\]
+For powers of the same matrix,
+\[
+\big((iA)^n\big)^\dagger
+=
+\big((iA)^\dagger\big)^n
+=
+(-iA)^n.
+\]
+Although taking the Hermitian conjugate reverses the
+order of a product, all the factors here are identical.
+
+Applying this to the series gives
+\[
+\begin{aligned}
+(e^{iA})^\dagger
+&=
+\mathbb{I}-iA+\frac{(-iA)^2}{2!}
++\frac{(-iA)^3}{3!}+\cdots\\
+&=e^{-iA}.
+\end{aligned}
+\]
+
+Now we substitute this into the unitarity condition:
+\[
+(e^{iA})^\dagger e^{iA}=e^{-iA}e^{iA}.
+\]
+The matrices $-iA$ and $iA$ commute because they are
+scalar multiples of the same matrix. Therefore, we
+can combine their exponentials:
+\[
+e^{-iA}e^{iA}
+=
+e^{-iA+iA}
+=
+e^0
+=
+\mathbb{I}.
+\]
+The reverse product gives the identity as well, so
+\[
+\boxed{
+(e^{iA})^\dagger e^{iA}
+=
+e^{iA}(e^{iA})^\dagger
+=
+\mathbb{I}.
+}
+\]
+Thus, $e^{iA}$ is unitary for every Hermitian matrix $A$.
+
+Physically, this connects Hermitian Hamiltonians with
+unitary time evolution. For a time-independent
+Hamiltonian $H$, the operator
+\[
+U(t)=e^{-iHt/\hbar}
+\]
+has this form with $A=-Ht/\hbar$, which is Hermitian
+for real $t$. Its unitarity preserves the norm:
+\[
+\braket{\psi(t)|\psi(t)}
+=
+\bra{\psi(0)}U^\dagger(t)U(t)\ket{\psi(0)}
+=
+\braket{\psi(0)|\psi(0)}.
+\]
+So a normalized initial state stays normalized, as
+required for the total measurement probability to
+remain one.
+
+% Match the numbering of the exercise set.
+\setcounter{section}{3}
+\section{Toward Quantum Simulation}
+\setcounter{subsection}{1}
+\subsection{Projecting Spatial Parity}
+
+\paragraph{Swapping the two qubits.}
+Interchanging the two Hilbert spaces means swapping the
+states occupying the first and second qubit positions.
+We represent this with the SWAP operator:
+\[
+\hat{S}\ket{ab}=\ket{ba}.
+\]
+On the computational basis states, this gives
+\[
+\hat{S}\ket{00}=\ket{00},\qquad
+\hat{S}\ket{01}=\ket{10},\qquad
+\hat{S}\ket{10}=\ket{01},\qquad
+\hat{S}\ket{11}=\ket{11}.
+\]
+Since the operator is linear, we can apply it separately
+to each term in a Bell state.
+
+\paragraph{The three triplet states.}
+For the first state,
+\[
+\begin{aligned}
+\hat{S}\ket{\psi_{t,1}}
+&=\hat{S}\frac{\ket{00}+\ket{11}}{\sqrt{2}}\\
+&=\frac{\ket{00}+\ket{11}}{\sqrt{2}}
+=\ket{\psi_{t,1}}.
+\end{aligned}
+\]
+Both terms stay the same under the swap.
+
+For the second state,
+\[
+\begin{aligned}
+\hat{S}\ket{\psi_{t,2}}
+&=\hat{S}\frac{\ket{01}+\ket{10}}{\sqrt{2}}\\
+&=\frac{\ket{10}+\ket{01}}{\sqrt{2}}
+=\ket{\psi_{t,2}}.
+\end{aligned}
+\]
+The terms exchange places, but their sum is unchanged.
+
+For the third state,
+\[
+\begin{aligned}
+\hat{S}\ket{\psi_{t,3}}
+&=\hat{S}\frac{\ket{00}-\ket{11}}{\sqrt{2}}\\
+&=\frac{\ket{00}-\ket{11}}{\sqrt{2}}
+=\ket{\psi_{t,3}}.
+\end{aligned}
+\]
+Again, each basis state stays in place. The minus sign
+between the terms does not make this state antisymmetric,
+because swapping the qubits does not exchange these two terms.
+
+Therefore, all three triplet states satisfy
+\[
+\boxed{\hat{S}\ket{\psi_{t,j}}=+\ket{\psi_{t,j}},
+\qquad j=1,2,3.}
+\]
+They are symmetric under exchange and have positive
+spatial parity.
+
+\paragraph{The singlet state.}
+For the remaining Bell state,
+\[
+\begin{aligned}
+\hat{S}\ket{\psi_s}
+&=\hat{S}\frac{\ket{01}-\ket{10}}{\sqrt{2}}\\
+&=\frac{\ket{10}-\ket{01}}{\sqrt{2}}\\
+&=-\frac{\ket{01}-\ket{10}}{\sqrt{2}}
+=-\ket{\psi_s}.
+\end{aligned}
+\]
+Here, exchanging the two terms introduces an overall
+minus sign. Thus,
+\[
+\boxed{\hat{S}\ket{\psi_s}=-\ket{\psi_s}.}
+\]
+The singlet is antisymmetric under exchange and has
+negative spatial parity.
+
+These results give three independent states with SWAP
+eigenvalue $+1$ and one with eigenvalue $-1$, accounting
+for all four dimensions of the two-qubit Hilbert space.
+Here, parity refers to symmetry under exchanging the
+qubits. 
+
+
+
+\setcounter{subsection}{2}
+\subsection{Time Evolution and Error Mitigation}
+\setcounter{subsubsection}{0}
+\subsubsection{Quantum Zeno Effect}
+
+Our initial state is $\ket{\psi(0)}=\ket{0}$, and the
+Hamiltonian is
+\[
+\hat{H}=\frac{X+Y}{\sqrt{2}}.
+\]
+Using the units in the question, the time-evolution
+operator is
+\[
+U_{\mathrm{ext}}(t)=e^{-i\hat{H}t}.
+\]
+We want to find how frequently we need to measure in
+the $Z$ basis to keep the state near $\ket{0}$ over
+one unit of time.
+
+\paragraph{Evolution between measurements.}
+First, we calculate the square of the Hamiltonian:
+\[
+\hat{H}^2
+=
+\frac{(X+Y)(X+Y)}{2}
+=
+\frac{X^2+XY+YX+Y^2}{2}.
+\]
+Since $X^2=Y^2=\mathbb{I}$ and $XY+YX=0$, we get
+\[
+\hat{H}^2=\mathbb{I}.
+\]
+Therefore, the even powers in the exponential series
+give the cosine terms, while the odd powers give the
+sine terms:
+\[
+e^{-i\hat{H}t}
+=
+\mathbb{I}\cos t-i\hat{H}\sin t.
+\]
+
+After a time interval $\Delta t$, the state becomes
+\[
+\begin{aligned}
+\ket{\psi(\Delta t)}
+&=U_{\mathrm{ext}}(\Delta t)\ket{0}\\
+&=\cos(\Delta t)\ket{0}
+-i\frac{X+Y}{\sqrt{2}}\sin(\Delta t)\ket{0}.
+\end{aligned}
+\]
+Using $X\ket{0}=\ket{1}$ and $Y\ket{0}=i\ket{1}$,
+\[
+\begin{aligned}
+\ket{\psi(\Delta t)}
+&=\cos(\Delta t)\ket{0}
+-i\frac{1+i}{\sqrt{2}}\sin(\Delta t)\ket{1}\\
+&=\cos(\Delta t)\ket{0}
++\frac{1-i}{\sqrt{2}}\sin(\Delta t)\ket{1}.
+\end{aligned}
+\]
+
+\paragraph{Probability of measuring zero.}
+Measuring in the $Z$ basis gives either $\ket{0}$ or
+$\ket{1}$. The probability of getting $\ket{0}$ is
+\[
+p_0(\Delta t)
+=
+\left|\braket{0|\psi(\Delta t)}\right|^2
+=
+\cos^2(\Delta t).
+\]
+If the result is zero, the measurement projects the
+state back to $\ket{0}$. The next interval then starts
+from the same state as the previous one.
+
+For $N$ equally spaced measurements over a total time
+$T=1$, the interval is
+\[
+\Delta t=\frac{T}{N}=\frac{1}{N}.
+\]
+Here, the measurements occur at $\Delta t,2\Delta t,
+\ldots,N\Delta t=1$; the initial preparation is not
+counted as a measurement.
+
+To get zero at every measurement, we multiply the
+conditional probability for each interval:
+\[
+\boxed{
+P_{\mathrm{survival}}(N)
+=
+\left[\cos^2\left(\frac{1}{N}\right)\right]^N.
+}
+\]
+This counts runs in which every result is zero,
+rather than runs that might leave $\ket{0}$ and
+return to it before the final measurement.
+
+\paragraph{Finding the number of measurements.}
+We need
+\[
+\left[\cos^2\left(\frac{1}{N}\right)\right]^N
+\geq 0.99.
+\]
+For large $N$, we can use the small-angle approximation
+$\cos^2 x\approx 1-x^2$:
+\[
+P_{\mathrm{survival}}(N)
+\approx
+\left(1-\frac{1}{N^2}\right)^N
+\approx
+1-\frac{1}{N}.
+\]
+The second approximation keeps the leading correction
+in the binomial expansion. This gives
+\[
+1-\frac{1}{N}\gtrsim 0.99,
+\]
+so we expect to need about $100$ measurements.
+
+Checking the exact expression at the two nearby
+integers gives
+\[
+P_{\mathrm{survival}}(99)
+\approx 0.98994966<0.99,
+\]
+whereas
+\[
+P_{\mathrm{survival}}(100)
+\approx 0.99004967>0.99.
+\]
+The survival probability increases with $N$ for this
+equally spaced protocol. Thus, the minimum is
+\[
+\boxed{N_{\min}=100,\qquad \Delta t=0.01.}
+\]
+
+\paragraph{Why repeated measurements help.}
+For a short interval, the probability of leaving
+$\ket{0}$ is
+\[
+1-p_0(\Delta t)=\sin^2(\Delta t)
+\approx(\Delta t)^2.
+\]
+Making the intervals shorter reduces this probability
+quadratically. Even though we perform more measurements,
+the total failure probability scales approximately as
+\[
+N(\Delta t)^2
+=
+N\left(\frac{1}{N}\right)^2
+=
+\frac{1}{N}.
+\]
+It therefore approaches zero as $N$ increases. This
+is the quantum Zeno effect: frequent measurements
+suppress transitions away from the initial state.
+
+The state still evolves slightly between measurements.
+For $N=100$, along a run with all zero outcomes, its
+overlap probability with $\ket{0}$ stays at least
+$\cos^2(0.01)\approx0.999900$ during each interval.
+The measurements repeatedly return it to $\ket{0}$,
+keeping it in that state's vicinity.
+
+\setcounter{subsubsection}{1}
+\subsubsection{Symmetry Identification}
+
+Our initial state is
+\[
+\ket{\psi(0)}
+=
+\frac{\ket{00}+\ket{11}}{\sqrt{2}}
+=
+\ket{\Phi^+},
+\]
+and the time-evolution operator is
+\[
+U_{\mathrm{noiseless}}(t)=e^{-i(X\otimes Y)t}.
+\]
+We use the Bell states
+\[
+\ket{\Phi^\pm}
+=
+\frac{\ket{00}\pm\ket{11}}{\sqrt{2}},
+\qquad
+\ket{\Psi^\pm}
+=
+\frac{\ket{01}\pm\ket{10}}{\sqrt{2}}.
+\]
+
+\paragraph{(a) Evolution in the Bell basis.}
+Since
+\[
+(X\otimes Y)^2=X^2\otimes Y^2=\mathbb{I}_4,
+\]
+we can rewrite the evolution operator as
+\[
+U_{\mathrm{noiseless}}(t)
+=
+\mathbb{I}_4\cos t-i(X\otimes Y)\sin t.
+\]
+First, we apply the Hamiltonian to the computational
+basis states in $\ket{\Phi^+}$:
+\[
+(X\otimes Y)\ket{00}=i\ket{11},
+\qquad
+(X\otimes Y)\ket{11}=-i\ket{00}.
+\]
+Therefore,
+\[
+\begin{aligned}
+(X\otimes Y)\ket{\Phi^+}
+&=
+\frac{i\ket{11}-i\ket{00}}{\sqrt{2}}\\
+&=
+-i\frac{\ket{00}-\ket{11}}{\sqrt{2}}\\
+&=-i\ket{\Phi^-}.
+\end{aligned}
+\]
+
+The state after time $t$ is then
+\[
+\begin{aligned}
+\ket{\psi(t)}
+&=U_{\mathrm{noiseless}}(t)\ket{\Phi^+}\\
+&=\cos t\ket{\Phi^+}
+-i(-i)\sin t\ket{\Phi^-}\\
+&=\cos t\ket{\Phi^+}-\sin t\ket{\Phi^-}.
+\end{aligned}
+\]
+Since the Bell basis is orthonormal, the measurement
+probabilities are
+\[
+\boxed{
+\begin{aligned}
+P_{\Phi^+}(t)&=\cos^2 t,\\
+P_{\Phi^-}(t)&=\sin^2 t,\\
+P_{\Psi^+}(t)&=0,\\
+P_{\Psi^-}(t)&=0.
+\end{aligned}
+}
+\]
+The probabilities sum to
+\[
+\cos^2 t+\sin^2 t=1.
+\]
+The state evolves between the two $\Phi$ Bell states,
+while the two $\Psi$ Bell states remain unpopulated.
+
+% Insert the probability plot and code here later.
+
+\paragraph{(b) Identifying the symmetry operator.}
+We need to find what the populated states have in
+common. Both $\ket{\Phi^+}$ and $\ket{\Phi^-}$ contain
+only $\ket{00}$ and $\ket{11}$, so the operator
+$Z\otimes Z$ works.
+
+Using $Z\ket{0}=\ket{0}$ and $Z\ket{1}=-\ket{1}$,
+\[
+\begin{aligned}
+(Z\otimes Z)\ket{\Phi^+}
+&=
+\frac{\ket{00}+\ket{11}}{\sqrt{2}}
+=+\ket{\Phi^+},\\
+(Z\otimes Z)\ket{\Phi^-}
+&=
+\frac{\ket{00}-\ket{11}}{\sqrt{2}}
+=+\ket{\Phi^-}.
+\end{aligned}
+\]
+For $\ket{11}$, the two minus signs cancel.
+Thus, both populated states have eigenvalue $+1$.
+
+For the other two Bell states,
+\[
+\begin{aligned}
+(Z\otimes Z)\ket{\Psi^+}
+&=
+\frac{-\ket{01}-\ket{10}}{\sqrt{2}}
+=-\ket{\Psi^+},\\
+(Z\otimes Z)\ket{\Psi^-}
+&=
+\frac{-\ket{01}+\ket{10}}{\sqrt{2}}
+=-\ket{\Psi^-}.
+\end{aligned}
+\]
+These states have eigenvalue $-1$. Therefore,
+$Z\otimes Z$ distinguishes the populated states
+from those that remain unpopulated:
+\[
+\boxed{
+\langle Z\otimes Z\rangle_{\Phi^\pm}=+1,
+\qquad
+\langle Z\otimes Z\rangle_{\Psi^\pm}=-1.
+}
+\]
+Here, parity refers to whether the two computational
+basis bits are equal or different.
+
+\paragraph{(c) Showing that parity is conserved.}
+With $\hat{H}=X\otimes Y$, the commutator is
+\[
+\begin{aligned}
+[Z\otimes Z,\hat{H}]
+&=(Z\otimes Z)(X\otimes Y)
+ -(X\otimes Y)(Z\otimes Z)\\
+&=ZX\otimes ZY-XZ\otimes YZ.
+\end{aligned}
+\]
+Since $ZX=-XZ$ and $ZY=-YZ$,
+\[
+\begin{aligned}
+[Z\otimes Z,\hat{H}]
+&=(-XZ)\otimes(-YZ)-XZ\otimes YZ\\
+&=(-1)(-1)(XZ\otimes YZ)-XZ\otimes YZ\\
+&=0.
+\end{aligned}
+\]
+Therefore,
+\[
+\boxed{[Z\otimes Z,\hat{H}]=0.}
+\]
+
+For a time-independent observable, with $\hbar=1$,
+\[
+\frac{d}{dt}\langle A\rangle
+=
+i\langle[\hat{H},A]\rangle.
+\]
+Applying this to $Z\otimes Z$ gives
+\[
+\frac{d}{dt}\langle Z\otimes Z\rangle
+=
+-i\langle[Z\otimes Z,\hat{H}]\rangle
+=0.
+\]
+The initial state has parity $+1$, so
+\[
+\boxed{\langle Z\otimes Z\rangle_t=+1
+\quad\text{for all }t.}
+\]
+The state can change between $\ket{\Phi^+}$ and
+$\ket{\Phi^-}$, but its parity stays the same.
+This is the conserved symmetry under the time evolution.
+
+
+
+\setcounter{subsubsection}{2}
+\subsubsection{Coherent Errors: Zeno and Basis Randomization}
+
+Now there is presence of single-qubit errors such that the time evolution becomes:
+\[
+U_{\mathrm{noisy}}(t)
+=
+e^{-iH_{\mathrm{noisy}}t},
+\qquad
+H_{\mathrm{noisy}}
+=
+X\otimes Y
++
+I\otimes\frac{X+Y}{\sqrt{2}}
++
+\frac{X+Y}{\sqrt{2}}\otimes I.
+\]
+
+\paragraph{(a) Plotting Evolution of Probabilities}
+
+We use the ordered Bell basis
+\[
+\left\{
+|\Phi^+\rangle,\,
+|\Phi^-\rangle,\,
+|\Psi^+\rangle,\,
+|\Psi^-\rangle
+\right\}.
+\]
+In this basis, the noisy Hamiltonian is
+\[
+H_{\mathrm{noisy}}
+=
+\begin{pmatrix}
+0 & i & \sqrt{2} & 0 \\
+-i & 0 & -i\sqrt{2} & 0 \\
+\sqrt{2} & i\sqrt{2} & 0 & -i \\
+0 & 0 & i & 0
+\end{pmatrix}.
+\]
+
+Starting in $|\Phi^+\rangle$, the initial state vector is
+\[
+\psi(0)=
+\begin{pmatrix}
+1\\0\\0\\0
+\end{pmatrix}.
+\]
+For each sampled time $t$, we numerically calculate the full
+matrix exponential using Python's
+\texttt{scipy.linalg.expm}, then evolve the state:
+\[
+\psi(t)=e^{-iH_{\mathrm{noisy}}t}\psi(0).
+\]
+The entries of $\psi(t)$ are the Bell-state amplitudes, so
+their squared magnitudes give the measurement probabilities:
+\[
+P_j^{\mathrm{noisy}}(t)=|\psi_j(t)|^2.
+\]
+
+For comparison, the noiseless evolution found prior gives
+\[
+P_{\Phi^+}^{\mathrm{ideal}}(t)=\cos^2 t,
+\qquad
+P_{\Phi^-}^{\mathrm{ideal}}(t)=\sin^2 t,
+\qquad
+P_{\Psi^\pm}^{\mathrm{ideal}}(t)=0.
+\]
+
+Interpreting the $\pm1\%$ tolerance as an absolute probability
+difference of $0.01$, we calculate
+\[
+\epsilon(t)
+=
+\max_j
+\left|
+P_j^{\mathrm{noisy}}(t)-P_j^{\mathrm{ideal}}(t)
+\right|.
+\]
+All four probabilities remain within tolerance while
+$\epsilon(t)\leq0.01$.
+
+Using a time grid with spacing $\Delta t=0.0001$, the first
+crossing of this tolerance occurs between $t=0.0710$ and
+$t=0.0711$. Thus, the probabilities remain within tolerance
+from $t=0$ until approximately
+\[
+\boxed{t_{\mathrm{limit}}\approx0.0710.}
+\]
+
+
+\part{Glossary}
+
+% Unnumbered sections keep glossary entries separate
+% from the exercise numbering.
+
+\section*{Glossary Entries}
+\addcontentsline{toc}{section}{Glossary Entries}
+
+% Add definitions with mathematical and physical explanations.
+
+\section*{Acknowledgments}
+\addcontentsline{toc}{section}{Acknowledgments}
+
+% Identify collaborators and their specific contributions,
+% where applicable.
+
+
+\end{document}
